@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, Response, stream_with_context
 import random
 import time
@@ -44,8 +45,11 @@ def home():
     <html>
         <body>
             <h1>Credit Card Validation Game</h1>
-            <p>To play, make a POST request to /play with your answer ("yes" or "no") for each card.</p>
-            <p>The game will send you credit card numbers one at a time.</p>
+            <p>To play:</p>
+            <ol>
+                <li>GET /play to start the game and receive a card number</li>
+                <li>POST /play with answer="yes" or "no" and card_number=XXXXX to submit your answer</li>
+            </ol>
         </body>
     </html>
     '''

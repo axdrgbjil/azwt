@@ -1,1 +1,2 @@
-# No external dependencies needed for this socket server
+flask==2.1.1
+gunicorn==20.1.0

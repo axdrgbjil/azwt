@@ -81,13 +81,9 @@ def start_game(client_socket):
                     client_socket.sendall(b"Flag: FLAG{credit_card_master}\n")
                     break
 
-            except ConnectionResetError:
-                print("Connection reset by client.")
-                client_socket.sendall(b"Connection reset by client. Game over.\n")
-                break
-            except socket.error as e:
-                print(f"Socket error: {e}")
-                client_socket.sendall(b"A socket error occurred. Game over.\n")
+            except (ConnectionResetError, socket.error) as e:
+                print(f"Connection error during game: {e}")
+                client_socket.sendall(b"Connection error occurred. Game over.\n")
                 break
             except Exception as e:
                 print(f"Unexpected error: {e}")
@@ -95,6 +91,7 @@ def start_game(client_socket):
                 break
 
         client_socket.close()
+
     except socket.error as e:
         print(f"Error in game loop: {e}")
         client_socket.sendall(b"Game loop error. Closing connection.\n")

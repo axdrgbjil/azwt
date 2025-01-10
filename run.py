@@ -55,6 +55,7 @@ def start_game(client_socket):
     client_socket.sendall(b"For each number, type 'yes' if it is valid, or 'no' if it is not.\n")
     client_socket.sendall(b"If you get all answers correct, you will win the flag!\n")
     client_socket.sendall(b"Let's get started!\n\n")
+    client_socket.flush()  # Ensure message is sent immediately
     time.sleep(2)
     
     correct_answers = 0
@@ -62,6 +63,7 @@ def start_game(client_socket):
         valid = validate_credit_card(card)
         client_socket.sendall(f"Credit Card {i}: {card}\n".encode())
         client_socket.sendall(b"Is this card valid? (yes/no): ")
+        client_socket.flush()  # Ensure message is sent immediately
 
         try:
             # Receive the answer from the client
@@ -69,33 +71,42 @@ def start_game(client_socket):
 
             if not answer:
                 client_socket.sendall(b"Connection closed or no answer. Game over.\n")
+                client_socket.flush()
                 break
 
             # Check if the user gives the correct answer
             if (valid and answer == 'yes') or (not valid and answer == 'no'):
                 correct_answers += 1
                 client_socket.sendall(b"Correct!\n\n")
+                client_socket.flush()  # Ensure message is sent immediately
             else:
                 client_socket.sendall(b"Incorrect answer! Game over.\n")
                 client_socket.sendall(f"You failed at card {i}\nGoodbye.\n".encode())
+                client_socket.flush()  # Ensure message is sent immediately
                 break
 
             # If the user has passed all 500 questions, show the flag
             if correct_answers == 500:
                 client_socket.sendall(b"Congratulations! You answered all questions correctly!\n")
                 client_socket.sendall(b"Flag: FLAG{credit_card_master}\n")
+                client_socket.flush()  # Ensure message is sent immediately
                 break
 
         except ConnectionResetError:
             print("Connection was reset by the client. Exiting game.")
             client_socket.sendall(b"Connection was reset by the client. Game over.\n")
+            client_socket.flush()  # Ensure message is sent immediately
             break
         except Exception as e:
             print(f"Unexpected error: {e}")
             client_socket.sendall(b"An unexpected error occurred. Game over.\n")
+            client_socket.flush()  # Ensure message is sent immediately
             break
 
-    client_socket.close()
+    try:
+        client_socket.close()  # Ensure client socket is properly closed
+    except Exception as e:
+        print(f"Error closing connection: {e}")
 
 # Start the server to listen for incoming connections
 def start_server():

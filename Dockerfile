@@ -1,13 +1,14 @@
-FROM python:3.10-slim
+# Use the official Python image with Ubuntu
+FROM python:3.9-slim
 
+# Set the working directory inside the container
 WORKDIR /app
 
-COPY run.py requirements.txt ./
+# Copy the script into the container
+COPY run.py /app/run.py
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Expose the port for Netcat connection
+EXPOSE 12345
 
-ENV PYTHONUNBUFFERED=1
-
-EXPOSE 3000
-
-CMD ["gunicorn", "--bind", "0.0.0.0:3000", "run:app"]
+# Run the script when the container starts
+CMD ["python3", "/app/run.py"]
